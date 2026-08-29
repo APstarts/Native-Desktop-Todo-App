@@ -1,0 +1,66 @@
+import { Button, VerticalBox, ListView, LineEdit } from "std-widgets.slint";
+import { TodoItem } from "todo_item.slint";
+
+export struct Todo { id: int, title: string, completed: bool }
+
+export component MainWindow inherits Window {
+    background: #18181b;
+    callback add_todo(string);
+    in-out property <[Todo]> todos;
+    callback delete_todo(int, int);
+    callback update_todo(int, int, bool);
+    width: 500px;
+    height: 600px;
+    VerticalLayout {
+        padding: 20px;
+        spacing: 15px;
+        Text {
+            text: "Todo";
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        HorizontalLayout {
+            spacing: 10px;
+            todo_input := LineEdit {
+                placeholder-text: "What do you need to do?";
+            }
+
+            Rectangle {
+                height: 36px;
+                width: 36px;
+                border-radius: 18px;
+                background: touch.pressed ? #2563eb : (touch.has-hover ? #3b82f6 : #1d4ed8);
+                Text {
+                    text: "+";
+                    color: white;
+                    font-size: 18px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                touch := TouchArea {
+                    clicked => {
+                        if todo_input.text != "" {
+                            root.add_todo(todo_input.text);
+                            todo_input.text = "";
+                        }
+                    }
+                }
+            }
+        }
+
+        ListView {
+            for todo[index] in todos: TodoItem {
+                id: todo.id;
+                title: todo.title;
+                completed: todo.completed;
+                index: index;
+                delete_clicked(id, index) => {
+                    root.delete_todo(id, index);
+                }
+                completed_changed(id, index, completed) => { root.update_todo(id, index, completed) }
+            }
+        }
+    }
+}

@@ -1,0 +1,87 @@
+import { CheckBox, Button } from "std-widgets.slint";
+
+export component TodoItem {
+    in-out property <int> id: -1;
+    in-out property <string> title: "";
+    in-out property <bool> completed: false;
+    in property <int> index: -1;
+
+    callback delete_clicked(int, int);
+    callback completed_changed(int, int, bool);
+
+    width: 460px;
+    height: 60px;
+
+    states [
+        completed when root.completed: {
+            card.background: #27272a;
+            indicator.background: #22c55e;
+            title.color: #f4f4f5;
+        }
+        incomplete when !root.completed: {
+            card.background: #18181b;
+            indicator.background: #d4d4d8;
+            title.color: #a1a1aa;
+        }
+    ]
+
+    card := Rectangle {
+        border-radius: 20px;
+
+        animate background { duration: 150ms; }
+
+        // Detects mouse interaction with the card.
+        touch := TouchArea {
+            width: 100%;
+            height: 100%;
+        }
+
+        HorizontalLayout {
+            spacing: 12px;
+            cross-axis-alignment: center;
+            padding: 10px;
+
+            indicator := Rectangle {
+                width: 8px;
+                height: 8px;
+                border-radius: 4px;
+            }
+
+            checkBox := CheckBox {
+                checked <=> completed;
+
+                toggled => {
+                    root.completed_changed(
+                        root.id,
+                        root.index,
+                        self.checked);
+                }
+            }
+
+            title := Text {
+                vertical-alignment: center;
+                text: root.title;
+
+                animate color { duration: 150ms; }
+            }
+
+            Rectangle {
+                height: 36px;
+                width: 36px;
+                border-radius: 18px;
+                background: delete_area.has-hover ? red : darkred;
+                Text {
+                    text: "x";
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                delete_area := TouchArea {
+                    clicked => {
+                        root.delete_clicked(root.id, root.index);
+                    }
+                }
+            }
+        }
+    }
+}
