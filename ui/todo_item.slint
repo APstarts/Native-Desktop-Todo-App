@@ -6,8 +6,8 @@ export component TodoItem {
     in-out property <bool> completed: false;
     in property <int> index: -1;
 
-    callback delete_clicked(int, int);
-    callback completed_changed(int, int, bool);
+    callback delete_clicked(int);
+    callback completed_changed(int, bool);
 
     width: 460px;
     height: 60px;
@@ -53,7 +53,6 @@ export component TodoItem {
                 toggled => {
                     root.completed_changed(
                         root.id,
-                        root.index,
                         self.checked);
                 }
             }
@@ -78,7 +77,7 @@ export component TodoItem {
 
                 delete_area := TouchArea {
                     clicked => {
-                        root.delete_clicked(root.id, root.index);
+                        root.delete_clicked(root.id);
                     }
                 }
             }

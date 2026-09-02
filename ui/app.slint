@@ -7,8 +7,8 @@ export component MainWindow inherits Window {
     background: #18181b;
     callback add_todo(string);
     in-out property <[Todo]> todos;
-    callback delete_todo(int, int);
-    callback update_todo(int, int, bool);
+    callback delete_todo(int);
+    callback update_todo(int, bool);
     width: 500px;
     height: 600px;
     VerticalLayout {
@@ -56,10 +56,11 @@ export component MainWindow inherits Window {
                 title: todo.title;
                 completed: todo.completed;
                 index: index;
-                delete_clicked(id, index) => {
-                    root.delete_todo(id, index);
+                delete_clicked(id) => {
+                  //passing the delete_clicked's info to the delete_todo callback which can then be used in the rust backend.
+                    root.delete_todo(id);
                 }
-                completed_changed(id, index, completed) => { root.update_todo(id, index, completed) }
+                completed_changed(id, completed) => { root.update_todo(id,completed) }
             }
         }
     }
