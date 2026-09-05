@@ -1,0 +1,45 @@
+import { Button, LineEdit, ListView } from "std-widgets.slint";
+import { TodoItem, Todo } from "todo_item.slint";
+
+export component TodosPage {
+    in-out property <[Todo]> todos; //this is what we do set_todos in the rust backend
+
+    callback add_todo(string);
+    callback delete_todo(int);
+    callback update_todo(int, bool);
+
+    VerticalLayout {
+        padding: 20px;
+        spacing: 15px;
+
+        HorizontalLayout {
+            input := LineEdit {
+                placeholder-text: "What needs to be done?";
+            }
+
+            Button {
+                text: "Add";
+                clicked => {
+                    root.add_todo(input.text);
+                    input.text = "";
+                }
+            }
+        }
+
+        ListView {
+            for todo[index] in root.todos: TodoItem {
+                title: todo.title;
+                completed: todo.completed;
+                id: todo.id;
+                index: index;
+                delete_clicked(id) => {
+                    root.delete_todo(id);
+                }
+
+                completed_changed(id, completed) => {
+                    root.update_todo(id, completed);
+                }
+            }
+        }
+    }
+}

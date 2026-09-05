@@ -1,7 +1,8 @@
 import { Button, VerticalBox, ListView, LineEdit } from "std-widgets.slint";
-import { TodoItem } from "todo_item.slint";
+import { TodoItem, Todo } from "todo_item.slint";
+import { TodosPage } from "todos-page.slint";
+import { SettingsPage } from "settings-page.slint";
 
-export struct Todo { id: int, title: string, completed: bool }
 
 export component MainWindow inherits Window {
     background: #18181b;
@@ -9,59 +10,95 @@ export component MainWindow inherits Window {
     in-out property <[Todo]> todos;
     callback delete_todo(int);
     callback update_todo(int, bool);
-    width: 500px;
+    property <int> current_page: 0;
     height: 600px;
     VerticalLayout {
-        padding: 20px;
-        spacing: 15px;
-        Text {
-            text: "Todo";
-            font-size: 28px;
-            font-weight: 700;
-        }
-
         HorizontalLayout {
-            spacing: 10px;
-            todo_input := LineEdit {
-                placeholder-text: "What do you need to do?";
+            height: 50px;
+            width: 500px;
+            Button {
+                text: "Todos";
+                clicked => {
+                    root.current_page = 0;
+                }
             }
 
-            Rectangle {
-                height: 36px;
-                width: 36px;
-                border-radius: 18px;
-                background: touch.pressed ? #2563eb : (touch.has-hover ? #3b82f6 : #1d4ed8);
-                Text {
-                    text: "+";
-                    color: white;
-                    font-size: 18px;
-                    horizontal-alignment: center;
-                    vertical-alignment: center;
-                }
-
-                touch := TouchArea {
-                    clicked => {
-                        if todo_input.text != "" {
-                            root.add_todo(todo_input.text);
-                            todo_input.text = "";
-                        }
-                    }
+            Button {
+                text: "Settings";
+                clicked => {
+                    root.current_page = 1;
                 }
             }
         }
 
-        ListView {
-            for todo[index] in todos: TodoItem {
-                id: todo.id;
-                title: todo.title;
-                completed: todo.completed;
-                index: index;
-                delete_clicked(id) => {
-                  //passing the delete_clicked's info to the delete_todo callback which can then be used in the rust backend.
-                    root.delete_todo(id);
-                }
-                completed_changed(id, completed) => { root.update_todo(id,completed) }
+        if root.current_page == 0: TodosPage {
+            todos: root.todos;
+            add_todo(title) => {
+                root.add_todo(title);
+            }
+            delete_todo(id) => {
+                root.delete_todo(id);
+            }
+            update_todo(id, completed) => {
+                root.update_todo(id, completed);
             }
         }
+
+        if root.current_page == 1: SettingsPage { }
     }
+    // width: 500px;
+    // height: 600px;
+    // VerticalLayout {
+    //     padding: 20px;
+    //     spacing: 15px;
+    //     Text {
+    //         text: "Todo";
+    //         font-size: 28px;
+    //         font-weight: 700;
+    //     }
+    //
+    //     HorizontalLayout {
+    //         spacing: 10px;
+    //         todo_input := LineEdit {
+    //             placeholder-text: "What do you need to do?";
+    //         }
+    //
+    //         Rectangle {
+    //             height: 36px;
+    //             width: 36px;
+    //             border-radius: 18px;
+    //             background: touch.pressed ? #2563eb : (touch.has-hover ? #3b82f6 : #1d4ed8);
+    //             Text {
+    //                 text: "+";
+    //                 color: white;
+    //                 font-size: 18px;
+    //                 horizontal-alignment: center;
+    //                 vertical-alignment: center;
+    //             }
+    //
+    //             touch := TouchArea {
+    //                 clicked => {
+    //                     if todo_input.text != "" {
+    //                         root.add_todo(todo_input.text);
+    //                         todo_input.text = "";
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    //     ListView {
+    //         for todo[index] in todos: TodoItem {
+    //             id: todo.id;
+    //             title: todo.title;
+    //             completed: todo.completed;
+    //             index: index;
+    //             delete_clicked(id) => {
+    //               //passing the delete_clicked's info to the delete_todo callback which can then be used in the rust backend.
+    //                 root.delete_todo(id);
+    //             }
+    //             completed_changed(id, completed) => { root.update_todo(id,completed) }
+    //         }
+    //     }
+    // }
 }

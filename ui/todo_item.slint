@@ -1,5 +1,8 @@
 import { CheckBox, Button } from "std-widgets.slint";
 
+
+export struct Todo { id: int, title: string, completed: bool }
+
 export component TodoItem {
     in-out property <int> id: -1;
     in-out property <string> title: "";
@@ -60,6 +63,7 @@ export component TodoItem {
             title := Text {
                 vertical-alignment: center;
                 text: root.title;
+                wrap: word-wrap;
 
                 animate color { duration: 150ms; }
             }
