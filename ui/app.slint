@@ -3,6 +3,11 @@ import { TodoItem, Todo } from "todo_item.slint";
 import { TodosPage } from "todos-page.slint";
 import { SettingsPage } from "settings-page.slint";
 
+export enum Page {
+    Todos,
+    Settings,
+}
+
 
 export component MainWindow inherits Window {
     background: #18181b;
@@ -10,7 +15,7 @@ export component MainWindow inherits Window {
     in-out property <[Todo]> todos;
     callback delete_todo(int);
     callback update_todo(int, bool);
-    property <int> current_page: 0;
+    property <Page> current_page: Page.Todos;
     height: 600px;
     VerticalLayout {
         HorizontalLayout {
@@ -19,19 +24,19 @@ export component MainWindow inherits Window {
             Button {
                 text: "Todos";
                 clicked => {
-                    root.current_page = 0;
+                    root.current_page = Page.Todos;
                 }
             }
 
             Button {
                 text: "Settings";
                 clicked => {
-                    root.current_page = 1;
+                    root.current_page = Page.Settings;
                 }
             }
         }
 
-        if root.current_page == 0: TodosPage {
+        if root.current_page == Page.Todos: TodosPage {
             todos: root.todos;
             add_todo(title) => {
                 root.add_todo(title);
@@ -44,7 +49,7 @@ export component MainWindow inherits Window {
             }
         }
 
-        if root.current_page == 1: SettingsPage { }
+        if root.current_page == Page.Settings: SettingsPage { }
     }
     // width: 500px;
     // height: 600px;
